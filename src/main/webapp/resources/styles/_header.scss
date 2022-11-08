@@ -1,0 +1,43 @@
+@import 'variables';
+@import 'mixins';
+
+.header {
+  font-family: monospace;
+  color: $main-text-color;
+  font-size: 20px;
+  background: $main-background-color;
+  padding: 10px 0;
+  margin-bottom: 40px;
+  &__container {
+    @include align-center;
+    span {
+      margin-right: 50px;
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+  .link{
+    position: absolute;
+    right: 10px;
+    input {
+      @include align-center;
+      font-size: 15px;
+      width: 130px;
+      height: 30px;
+      border: none;
+      cursor: pointer;
+      background: $hovered-button-color;
+      border-radius: 7px;
+      transition: 0.1s ease-in-out;
+      &:hover {
+        background: $active-button-color;
+        color: $additional-text-color;
+      }
+      &.active-btn {
+        background: $active-button-color;
+        color: $additional-text-color;
+      }
+    }
+  }
+}
