@@ -1,16 +1,16 @@
 package goanvi.prog.lab3.model;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "marks")
 public class Mark implements Serializable {
@@ -26,11 +26,11 @@ public class Mark implements Serializable {
     @Column
     private String hit;
     @Column
-    private Date time;
+    private String time;
     @Column
     private long leadTime;
 
-    public Mark(double xValue, double yValue, double rValue, String hit, Date time, long leadTime) {
+    public Mark(double xValue, double yValue, double rValue, String hit, String time, long leadTime) {
         this.xValue = xValue;
         this.yValue = yValue;
         this.rValue = rValue;

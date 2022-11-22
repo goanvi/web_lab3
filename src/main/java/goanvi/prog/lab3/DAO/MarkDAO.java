@@ -1,9 +1,8 @@
 package goanvi.prog.lab3.DAO;
 
 import goanvi.prog.lab3.model.Mark;
-import goanvi.prog.lab3.utils.HibernateSessionFactoryUtil;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 
 import java.util.List;
 
@@ -22,7 +21,7 @@ public class MarkDAO implements BaseDAO<Mark> {
 
     @Override
     public List<Mark> findAll(Session session) {
-        return session.createNativeQuery("SELECT * FROM marks", Mark.class).getResultList();
+        return session.createQuery("from Mark", Mark.class).getResultList();
     }
 
     @Override
@@ -40,6 +39,32 @@ public class MarkDAO implements BaseDAO<Mark> {
         session.createNativeQuery("TRUNCATE marks", Mark.class).executeUpdate();
     }
 
+    public List<Mark> getRange(int first, int range, Session session){
+        return session.createQuery("from Mark mark order by mark.id" , Mark.class).setFirstResult(first).setMaxResults(range).getResultList();
+    }
+
+    public Long getNumberOfElements(Session session){
+        return (Long) session.createQuery("select count(mark) from Mark mark").uniqueResult();
+    }
+
+    public List<Mark> findByLeadTimeAndTime(Session session, String currentTime, Long leadTime){
+        Query query;
+        if (currentTime==null && leadTime==null) {
+            query = session.createQuery("from Mark");
+        } else if (currentTime == null){
+            query = session.createQuery("from Mark mark where mark.leadTime = :leadTime", Mark.class)
+                    .setParameter("leadTime",leadTime);
+        } else if (leadTime == null) {
+            query = session.createQuery("from Mark mark where mark.time = :time", Mark.class)
+                    .setParameter("time", currentTime);
+        }else {
+            query = session.createQuery("from Mark mark where mark.time = :time and mark.leadTime = :leadTime", Mark.class)
+                    .setParameter("time",currentTime).setParameter("leadTime",leadTime);
+        }
+        return query.getResultList();
+
+    }
+
     public void createTable(Session session){
         session.createNativeQuery("create table if not exists marks" +
                 "(" +
@@ -49,7 +74,7 @@ public class MarkDAO implements BaseDAO<Mark> {
                 "    yvalue   double precision not null," +
                 "    rvalue   double precision not null," +
                 "    hit      varchar(4)       not null," +
-                "    time     timestamp        not null," +
+                "    time     varchar          not null," +
                 "    leadtime bigint           not null" +
                 ");").executeUpdate();
     }

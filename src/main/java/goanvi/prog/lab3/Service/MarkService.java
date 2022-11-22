@@ -7,16 +7,13 @@ import goanvi.prog.lab3.utils.TransactionCallable;
 import goanvi.prog.lab3.utils.TransactionManager;
 import org.hibernate.Session;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MarkService {
     private final MarkDAO markDAO;
-    private final SimpleDateFormat sdf;
     public MarkService(){
         this.markDAO = new MarkDAO();
-        sdf = new SimpleDateFormat("HH:mm:ss");
     }
 
     public void addMark(Mark mark){
@@ -56,7 +53,7 @@ public class MarkService {
                     mark.getYValue(),
                     mark.getRValue(),
                     mark.getHit(),
-                    sdf.format(mark.getTime()),
+                    mark.getTime(),
                     mark.getLeadTime()
 
             );
@@ -73,5 +70,60 @@ public class MarkService {
                return null;
            }
         });
+    }
+
+    public List<MarkDTO> getRange(int first, int range) {
+        List<MarkDTO> marksDTO = new ArrayList<>();
+        List<Mark> marks =TransactionManager.doInTransaction(new TransactionCallable<List<Mark>>() {
+            @Override
+            public List<Mark> execute(Session session) {
+                return markDAO.getRange(first, range,session);
+            }
+        });
+        marks.forEach(mark -> {
+            MarkDTO markDTO = new MarkDTO(
+                    mark.getXValue(),
+                    mark.getYValue(),
+                    mark.getRValue(),
+                    mark.getHit(),
+                    mark.getTime(),
+                    mark.getLeadTime()
+
+            );
+            marksDTO.add(markDTO);
+        });
+        return marksDTO;
+    }
+
+    public Long getNumberOfElements(){
+       return TransactionManager.doInTransaction(new TransactionCallable<Long>() {
+            @Override
+            public Long execute(Session session) {
+                return markDAO.getNumberOfElements(session);
+            }
+        });
+    }
+
+    public List<MarkDTO> findByLeadTimeAndTime(String currentTime, Long leadTime){
+        List<MarkDTO> marksDTO = new ArrayList<>();
+        List<Mark> marks =TransactionManager.doInTransaction(new TransactionCallable<List<Mark>>() {
+            @Override
+            public List<Mark> execute(Session session) {
+                return markDAO.findByLeadTimeAndTime(session,currentTime,leadTime);
+            }
+        });
+        marks.forEach(mark -> {
+            MarkDTO markDTO = new MarkDTO(
+                    mark.getXValue(),
+                    mark.getYValue(),
+                    mark.getRValue(),
+                    mark.getHit(),
+                    mark.getTime(),
+                    mark.getLeadTime()
+
+            );
+            marksDTO.add(markDTO);
+        });
+        return marksDTO;
     }
 }

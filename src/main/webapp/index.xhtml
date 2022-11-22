@@ -19,14 +19,14 @@
             <span>Name: Goncharov Andrey Viktorovich</span>
             <span>Group: P32312</span>
             <span>Var: 6666</span>
-        <h:form class="link">
-            <h:commandButton action="toStart" value="To previous page"/>
-        </h:form>
+            <h:form class="link">
+                <h:commandButton action="toStart" value="To previous page"/>
+            </h:form>
         </div>
     </div>
     <div class="main">
         <div class="col-5" id="col-5">
-            <div class="test" >
+            <div class="test">
                 <h:panelGroup layout="block" class="main__graph" id="main-graph">
                     <ui:include src="svg.xhtml"/>
                 </h:panelGroup>
@@ -35,7 +35,8 @@
                 <h:form class="form" id="form" method="GET">
                     <div class="main__panel X panel">
                         <h4>X</h4>
-                        <h:selectOneRadio value="#{mark.XValue}" id="x-inputs" class="main__panel x-buttons" required="true" requiredMessage="X can not be empty">
+                        <h:selectOneRadio value="#{mark.XValue}" id="x-inputs" class="main__panel x-buttons"
+                                          required="true" requiredMessage="X can not be empty">
                             <f:selectItem itemLabel="-4" itemValue="-4"/>
                             <f:selectItem itemLabel="-3" itemValue="-3"/>
                             <f:selectItem itemLabel="-2" itemValue="-2"/>
@@ -53,23 +54,24 @@
                         <h:inputText id="y-input" a:placeholder="In range [-3;3]" maxlength="10" value="#{mark.YValue}"
                                      style="width: 146px" converterMessage="Y value should be a number!" required="true"
                                      requiredMessage="Y value is required!">
-                            <f:validator validatorId="yValidator" />
+                            <f:validator validatorId="yValidator"/>
                             <f:ajax event="keyup" render="errors" execute="@this"/>
                         </h:inputText>
                     </div>
                     <div class="main__panel R panel">
                         <h4>R</h4>
                         <div class="slider">
-                        <ace:sliderEntry value="#{mark.position}" axis="x" min="0" max="6" id="rValue"
-                                         stepPercent="#{mark.percent}" length="150px" style="margin-left: 10px;"    >
-                            <ace:ajax event="slideEnd" execute="@this" render="@form" />
-                        </ace:sliderEntry>
-                        <h:outputText id="outputR" value="#{mark.RValue}" class="r-value"/>
+                            <ace:sliderEntry value="#{mark.position}" axis="x" min="0" max="6" id="rValue"
+                                             stepPercent="#{mark.percent}" length="150px" style="margin-left: 10px;">
+                                <ace:ajax event="slideEnd" execute="@this" render="@form"/>
+                            </ace:sliderEntry>
+                            <h:outputText id="outputR" value="#{mark.RValue}" class="r-value"/>
                         </div>
                     </div>
                     <div style="display: flex;" class="buttons">
-                        <h:commandButton class="btn" type="submit" id="submit-btn" value="Submit" action="#{markHendler.addMark}">
-                            <f:ajax execute="@form" render="result-table-body main-graph errors"/>
+                        <h:commandButton class="btn" type="submit" id="submit-btn" value="Submit"
+                                         action="#{markHendler.addMark}">
+                            <f:ajax execute="@form" render="table main-graph errors"/>
                         </h:commandButton>
                     </div>
                 </h:form>
@@ -78,10 +80,10 @@
                     <h:inputHidden id="hidden-y" value="#{mark.YValue}"/>
                     <h:inputHidden id="hidden-r" value="#{mark.RValue}"/>
                     <h:commandButton style="display: none" id="hidden-btn" action="#{markHendler.addMark}">
-                        <f:ajax execute="@form" render="result-table-body main-graph"/>
+                        <f:ajax execute="@form" render="table main-graph"/>
                     </h:commandButton>
                     <h:commandButton class="btn" id="clear-btn" value="Clear" action="#{markHendler.clearStorage}">
-                        <f:ajax execute="@form" render="result-table-body main-graph"/>
+                        <f:ajax execute="@form" render="table main-graph"/>
                     </h:commandButton>
                 </h:form>
             </div>
@@ -89,37 +91,36 @@
                 <h:messages id="errors" style="width: 100%; color: red; margin-top: 10px"/>
             </div>
         </div>
-        <div class="col-7" id="col-7">
-            <div class="main__table">
-                <h:dataTable var="hit" value="#{markHendler.marks}" id="result-table-body"  >
-                    <h:column>
-                        <f:facet name="header">X value</f:facet>
-                        #{hit.XValue}
-                    </h:column>
-                    <h:column>
-                        <f:facet name="header">Y value</f:facet>
-                        #{hit.YValue}
-                    </h:column>
-                    <h:column>
-                        <f:facet name="header">R value</f:facet>
-                        #{hit.RValue}
-                    </h:column>
-                    <h:column id="hit" headerClass="column">
-                        <f:facet name="header">Hit</f:facet>
-                        #{hit.hit}
-                    </h:column>
-                    <h:column>
-                        <f:facet name="header">Current time</f:facet>
-                        #{hit.time}
-                    </h:column>
-                    <h:column>
-                        <f:facet name="header">Lead time</f:facet>
-                        #{hit.leadTime} mcs
-                    </h:column>
-                </h:dataTable>
+        <h:form id="table">
+            <div class="col-7" id="col-7">
+                <div class="main__table">
+                    <ace:dataTable var="hit" value="#{markHendler.lazyMarks}" id="result-table-body"
+                                   paginator="true" rows="3" paginatorPosition="bottom" pageCount="3"
+                                   emptyMessage="Table is empty" lazy="true">
+                        <ace:ajax event="filter" render="table"/>
+                        <ace:column headerText="X value">
+                            <h:outputText value=" #{hit.XValue}"/>
+                        </ace:column>
+                        <ace:column headerText="Y value" >
+                            <h:outputText value=" #{hit.YValue}"/>
+                        </ace:column>
+                        <ace:column headerText="R value">
+                            <h:outputText value=" #{hit.RValue}"/>
+                        </ace:column>
+                        <ace:column headerText="Hit">
+                            <h:outputText value=" #{hit.hit}"/>
+                        </ace:column>
+                        <ace:column headerText="Current time" filterBy="#{hit.time}">
+                            <h:outputText value=" #{hit.time}"/>
+                        </ace:column>
+                        <ace:column headerText="Lead time" filterBy="#{hit.leadTime}">
+                            <h:outputText value=" #{hit.leadTime} mcs"/>
+                        </ace:column>
+                    </ace:dataTable>
+                </div>
             </div>
-        </div>
+        </h:form>
     </div>
-    <h:outputScript library="js" name="index.js"/>
+<h:outputScript library="js" name="index.js"/>
 </h:body>
-</html>
+        </html>

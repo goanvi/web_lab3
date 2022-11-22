@@ -7,10 +7,8 @@ import lombok.*;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 @ManagedBean(name = "mark")
 @SessionScoped
@@ -35,6 +33,7 @@ public class MarkMaker implements Serializable {
     private int rMax;
     @Getter(AccessLevel.NONE) @Setter(AccessLevel.NONE)
     private final HitMark hitMark;
+    private final DateTimeFormatter timeFormatter;
 
     public MarkMaker() {
         this.position = 0;
@@ -43,12 +42,14 @@ public class MarkMaker implements Serializable {
         this.rMin=1;
         this.rMax=4;
         hitMark = new HitMark();
+        timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
     }
 
     public Mark makeNewMark(){
         long nanoTime = System.nanoTime();
         String hit = hitMark.hitMark(xValue, yValue, rValue)?"hit":"miss";
-        return new Mark(xValue,yValue,rValue,hit,new Date(),nanoTime);
+        LocalTime time = LocalTime.now();
+        return new Mark(xValue,yValue,rValue,hit,time.format(timeFormatter),nanoTime);
     }
 
     public void setPosition(int position){
